@@ -207,6 +207,67 @@ params: {
 
 ---
 
+## How SKILL.md Works & Why It Matters
+
+### What SKILL.md Is
+
+SKILL.md is the **brain of the Cowork orchestrator**. It is a markdown file inside the NathCorp Cowork plugin that tells Cowork:
+- When to trigger the GitHub skill (what user phrases to detect)
+- How to classify the user's intent
+- What to write inside the `task` parameter sent to `delegate_to_github_agent`
+
+It does **not** call GitHub directly. It does **not** connect to the Foundry agent directly. It is pure instruction text that shapes how the orchestrator builds the task string.
+
+### Why It Is Useful
+
+Without a good SKILL.md, the orchestrator has no guidance — it defaults to whatever pattern the example shows. This is what caused the original bug: the old SKILL.md had one example that always created a branch and raised a PR, so even "add a file called rajesh.txt" ended up creating `feature/add-rajesh-txt` and PR #8 instead of a direct commit.
+
+With a production SKILL.md the orchestrator:
+- Classifies intent (read-only vs direct commit vs branch+PR vs PR operation)
+- Asks the user which repo before proceeding if no repo is named
+- Resolves the default branch dynamically instead of assuming `master`
+- Respects explicit user overrides ("no PR", "commit directly")
+
+### The Full Flow
+
+```
+User types in Cowork
+      ↓
+SKILL.md — orchestrator reads this to classify intent and build the task string
+      ↓
+delegate_to_github_agent({ task: "..." })   ← MCP tool call
+      ↓
+nathcorp-mcp-server (Azure App Service bridge)
+      ↓  A2A v1.0 SendMessage
+Azure AI Foundry github-agent
+      ↓  GitHub MCP tool call (e.g. create_or_update_file)
+GitHub API → actual change on the repo
+```
+
+### Why We Added Official GitHub MCP Tool Names To SKILL.md
+
+The Foundry `github-agent` is connected to the **official GitHub MCP server** (`github/github-mcp-server`). That server exposes 114 tools with exact names like `create_or_update_file`, `create_branch`, `merge_pull_request`, `list_issues`, etc.
+
+When the orchestrator writes the task string vaguely (e.g. "add a file"), the Foundry agent has to guess which tool to use — and it may guess wrong (e.g. choosing to create a branch first). When the task string explicitly says **"use `create_or_update_file` to commit directly to master"**, the Foundry agent has no ambiguity and executes the right tool immediately.
+
+**Examples of official tool names referenced in SKILL.md:**
+
+| Tool Name | Used For |
+|-----------|---------|
+| `create_or_update_file` | Add or edit a single file, commit directly to a branch |
+| `push_files` | Commit multiple files in one operation |
+| `delete_file` | Delete a file from a branch |
+| `create_branch` | Create a new branch before a code change |
+| `create_pull_request` | Open a PR after committing to a branch |
+| `merge_pull_request` | Merge an existing PR |
+| `list_branches` | Resolve the default branch dynamically (never assume master/main) |
+| `search_repositories` | List user's repos when no repo is specified — ask before acting |
+| `list_issues` / `issue_write` | Read or create issues |
+
+These are **not called by SKILL.md** — they are guidance text so the orchestrator writes precise instructions in the task string, and the Foundry agent picks the right tool on the first attempt.
+
+---
+
 ## Official References
 
 - [Enable incoming A2A on Foundry agent — Microsoft Learn](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/enable-agent-to-agent-endpoint)

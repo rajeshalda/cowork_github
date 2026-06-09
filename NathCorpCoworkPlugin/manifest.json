@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json",
   "manifestVersion": "devPreview",
-  "version": "4.0.0",
-  "id": "49402c59-c65f-444c-99e1-ee02174e1067",
+  "version": "5.0.0",
+  "id": "9333fdb2-ae66-489b-8fc3-d725cfb1f12a",
   "packageName": "com.nathcorp.cowork",
   "developer": {
     "name": "NathCorp IT Team",
@@ -11,8 +11,8 @@
     "termsOfUseUrl": "https://nathcorp.com/terms"
   },
   "name": {
-    "short": "NathCorp Cowork",
-    "full": "NathCorp Cowork — AI Agent Platform"
+    "short": "NathCorp GitHub Plugin",
+    "full": "NathCorp GitHub Agent Plugin"
   },
   "description": {
     "short": "Agentic AI — Cowork + Azure AI Foundry + GitHub",
@@ -24,15 +24,16 @@
   },
   "accentColor": "#0078D4",
   "agentSkills": [
-    { "folder": "./skills/servicenow-kb-search" }
+    { "folder": "./skills/github-agent" }
   ],
   "agentConnectors": [
     {
       "id": "foundry-agent-a2a",
       "displayName": "NathCorp Foundry GitHub Agent",
+      "description": "Connects to the NathCorp MCP bridge which forwards tasks to the Azure AI Foundry GitHub Agent via A2A v1.0",
       "toolSource": {
-        "remoteAgent": {
-          "agentUrl": "https://rajesh-cowork.services.ai.azure.com/api/projects/rajesh-cowork/agents/github-agent/endpoint/protocols/a2a",
+        "remoteMcpServer": {
+          "mcpServerUrl": "https://nathcorp-mcp-server.azurewebsites.net",
           "authorization": {
             "type": "None"
           }
