@@ -1,0 +1,43 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/vDevPreview/MicrosoftTeams.schema.json",
+  "manifestVersion": "devPreview",
+  "version": "4.0.0",
+  "id": "49402c59-c65f-444c-99e1-ee02174e1067",
+  "packageName": "com.nathcorp.cowork",
+  "developer": {
+    "name": "NathCorp IT Team",
+    "websiteUrl": "https://nathcorp.com",
+    "privacyUrl": "https://nathcorp.com/privacy",
+    "termsOfUseUrl": "https://nathcorp.com/terms"
+  },
+  "name": {
+    "short": "NathCorp Cowork",
+    "full": "NathCorp Cowork — AI Agent Platform"
+  },
+  "description": {
+    "short": "Agentic AI — Cowork + Azure AI Foundry + GitHub",
+    "full": "Cowork orchestrates Azure AI Foundry Agent via A2A to perform autonomous GitHub operations including bug fixing, commits, and pull requests."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#0078D4",
+  "agentSkills": [
+    { "folder": "./skills/servicenow-kb-search" }
+  ],
+  "agentConnectors": [
+    {
+      "id": "foundry-agent-a2a",
+      "displayName": "NathCorp Foundry GitHub Agent",
+      "toolSource": {
+        "remoteAgent": {
+          "agentUrl": "https://rajesh-cowork.services.ai.azure.com/api/projects/rajesh-cowork/agents/github-agent/endpoint/protocols/a2a",
+          "authorization": {
+            "type": "None"
+          }
+        }
+      }
+    }
+  ]
+}
