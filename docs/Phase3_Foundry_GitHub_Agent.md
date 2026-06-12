@@ -268,6 +268,201 @@ These are **not called by SKILL.md** — they are guidance text so the orchestra
 
 ---
 
+## Phase 3.1 — Key Discoveries (2026-06-11)
+
+This section documents everything we discovered during live production testing on 2026-06-11. These are non-obvious findings that are critical to understand before making any future changes.
+
+---
+
+### Discovery 1: Cowork Reads The MCP Server Directly — SKILL.md In The Plugin Is NOT Required
+
+**What we found:**
+We had an old plugin version deployed in production (with outdated SKILL.md). We uploaded a new plugin with a new GUID but Cowork was already responding correctly — because Cowork connects to the MCP server URL from `manifest.json` via `agentConnectors → remoteMcpServer` and calls `mcp_list_tools` to read the tool name and description directly from `server.js`.
+
+**What this means:**
+- The SKILL.md inside the plugin zip is **not the brain** — it is just a hint
+- Cowork reads the **`delegate_to_github_agent` tool description from `server.js`** to understand what the tool does and how to build the task string
+- As long as the MCP server URL is present in the plugin manifest, Cowork will always read the latest tool description from the live MCP server
+- **The plugin zip never needs to be re-uploaded** for behaviour changes — only update `server.js` and redeploy to Azure App Service
+
+**Proof:**
+Old plugin was in production. We updated `server.js` tool description and redeployed. Cowork immediately reflected the new behaviour without any plugin re-upload.
+
+**Flow confirmed:**
+```
+Cowork plugin manifest.json
+  ↓  agentConnectors → remoteMcpServer → https://nathcorp-mcp-server.azurewebsites.net
+  ↓  mcp_list_tools (reads tool name + description from server.js)
+  ↓  orchestrator builds task string based on tool description
+delegate_to_github_agent({ task: "natural language instruction" })
+  ↓
+nathcorp-mcp-server bridge
+  ↓  A2A v1.0 SendMessage
+Azure AI Foundry github-agent (gpt-5.4)
+  ↓  decides which GitHub MCP tools to call autonomously
+GitHub API
+```
+
+---
+
+### Discovery 2: The Task String Must Be Natural Language — NOT Technical Tool Instructions
+
+**What we found:**
+When the task string sent to Foundry via A2A contained explicit tool names and parameters like:
+```
+"Use create_repository tool with autoInit:true in rajeshaldanathcorp account..."
+```
+Foundry returned a **500 Internal Error** immediately. The same operation with simple natural language:
+```
+"create a new private GitHub repo called X"
+```
+Completed in **9.9 seconds** with `TASK_STATE_COMPLETED`.
+
+**Why:**
+The official Microsoft A2A documentation confirms the message content should be plain text:
+```python
+# From Microsoft Learn — Enable incoming A2A on a Foundry agent
+message = new_text_message("Hello, what can you do?", role=Role.ROLE_USER)
+```
+The Foundry agent passes the incoming message through **gpt-5.4** (the LLM) which autonomously decides which GitHub MCP tools to call. Over-specifying tool names and parameters confuses the LLM and causes Foundry to fail internally with a 500.
+
+**Rule:** Always send natural language to the Foundry agent. Never include JSON, tool names, or structured parameters in the task string.
+
+**Reference:** [Enable incoming A2A — Microsoft Learn](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/enable-agent-to-agent-endpoint)
+
+---
+
+### Discovery 3: The MCP Server Tool Description IS The New SKILL.md
+
+**What we found:**
+Since Cowork reads the tool description from `server.js` to understand intent, the `delegate_to_github_agent` tool description is now the single source of truth for all behaviour — replacing SKILL.md entirely.
+
+**Current production description in `server.js`** contains:
+- 7 intent categories (READ-ONLY, DIRECT COMMIT, REPO MANAGEMENT, BRANCH+PR, PR/ISSUE OPERATION, WORKFLOW/ACTIONS, EXPLICIT OVERRIDE)
+- Natural language task format rules
+- Default behaviour for each category (e.g. direct commit vs branch+PR)
+- Repo resolution rule — always ask if repo not specified
+
+**What changed vs old SKILL.md approach:**
+
+| | Old Approach (SKILL.md in plugin) | New Approach (server.js description) |
+|---|---|---|
+| Where intent logic lives | SKILL.md in plugin zip | `delegate_to_github_agent` description in `server.js` |
+| How to update | Re-upload plugin zip to admin portal | Redeploy `server.js` to Azure App Service |
+| Plugin re-upload needed | ✅ Yes every time | ❌ Never |
+| Takes effect | After admin approves new plugin version | Immediately on App Service restart |
+| Task format sent to Foundry | Explicit tool names + structured params | Natural language only |
+
+---
+
+### Discovery 4: Foundry Agent Card — A2A Discovery Metadata
+
+**What we found:**
+The Azure AI Foundry portal has an **"Edit agent card"** option on the A2A protocol endpoint. This agent card is the A2A discovery metadata — when any A2A client calls the endpoint, it can read this card to understand what the agent can do.
+
+**Agent card fields:**
+- **Name** — agent name
+- **Description** — what the agent does overall
+- **Skills** — array of skill objects, each with name, tags, description, and example prompts (max 5 tags, max 5 example prompts per skill)
+
+**What we configured:**
+```
+Name: github-agent
+Description: NathCorp GitHub agent — autonomously performs GitHub operations...
+Skill name: github-agent
+Tags: github, code, bugfix, pullrequest, repository
+Skill description: Full intent classification (READ-ONLY, DIRECT COMMIT, BRANCH+PR, etc.)
+Example prompts: 5 key prompts covering all major categories
+```
+
+**Important:** The agent card is A2A protocol metadata — it helps the Foundry agent understand its own capabilities. It is separate from the MCP tool description that Cowork reads. Both work together.
+
+---
+
+### Discovery 5: Foundry "Allowed GitHub Tools" Field — Do Not Use
+
+**What happened:**
+During debugging of `create_repository` failures, we added `create_repository` to the "Allowed GitHub tools" field in the Foundry GitHub MCP configuration. This **restricted the agent to only that one tool**, breaking all other operations (list repos returned "I can only create repositories").
+
+**Root cause of original `create_repository` failure:**
+Was NOT a tool permission issue. Was the **task string format** — over-specified instructions caused a 500. Once task string was changed to natural language (`"create a new private GitHub repo called X"`), it worked in 9.9 seconds.
+
+**Rule:** Leave the "Allowed GitHub tools" field **completely empty** — empty means all 114 GitHub MCP tools are available. Never add specific tool names to this field unless you intentionally want to restrict the agent.
+
+---
+
+### Discovery 6: Foundry A2A Returns TASK_STATE_COMPLETED Inline — Polling Not Always Needed
+
+**What we found:**
+For most operations, Foundry returns `TASK_STATE_COMPLETED` directly in the `SendMessage` response — no polling via `GetTask` is needed at all. The task completes synchronously within the SendMessage call.
+
+**Timing data from live tests:**
+
+| Operation | Time to complete | Method |
+|---|---|---|
+| List repositories | ~8s | Inline in SendMessage response |
+| Add a file (direct commit) | ~10s | Inline in SendMessage response |
+| Create repository | ~9.9s | Inline in SendMessage response |
+| Fix code + branch + PR | ~15-20s | Inline in SendMessage response |
+| List open PRs | ~8s | Inline in SendMessage response |
+
+All operations complete well within the **60 second Cowork MCP timeout**.
+
+**What was causing the original `create_repository` 500 error:**
+Over-specified task string (explicit tool names + parameters) → Foundry LLM confused → 500 returned before task even starts. Nothing to do with timeouts or polling.
+
+---
+
+### Discovery 7: `inputSchema` Task Parameter Description Also Shapes The Task String
+
+**What we found:**
+The `server.js` MCP tool has two places that influence how Cowork builds the task string:
+1. The **tool description** (top level) — tells Cowork what the tool does and intent categories
+2. The **`task` parameter description** in `inputSchema` — tells Cowork how to format the task string itself
+
+The old `inputSchema` task description said:
+```
+"Always include: full repo path as rajeshaldanathcorp/<repo>, branch name to create, default branch is master..."
+```
+This caused the orchestrator to add technical details that over-specified the task and triggered Foundry 500 errors.
+
+**Fixed to:**
+```
+"Natural language instruction for the GitHub agent. Write exactly what you want done — the agent decides which tools to use."
+```
+
+**Rule:** Both the tool description AND the inputSchema parameter description must be kept consistent and aligned with natural language intent.
+
+---
+
+### Updated Key Technical Discoveries Table
+
+| Discovery | Detail |
+|-----------|--------|
+| Cowork reads MCP tool description directly | Plugin SKILL.md is irrelevant as long as MCP URL is in manifest |
+| Task string must be natural language | Explicit tool names/params cause Foundry 500 errors |
+| TASK_STATE_COMPLETED returned inline | Most operations complete in SendMessage, no polling needed |
+| inputSchema task description shapes task string | Must also be natural language guidance, not structured instructions |
+| Allowed GitHub tools field | Leave empty — any value restricts the agent to only those tools |
+| Agent Card | A2A discovery metadata — configurable in Foundry portal, supplements MCP description |
+| `create_repository` working phrase | `"create a new private GitHub repo called X"` — 9.9 seconds end-to-end |
+
+---
+
+### Proven Working — 2026-06-11 (Full Re-test)
+
+All tested end-to-end from Microsoft Cowork with updated `server.js` description:
+
+| Operation | Result | Time |
+|-----------|--------|------|
+| List all GitHub repositories | ✅ 7 repos returned | ~8s |
+| Add file directly to master (no PR) | ✅ Committed directly, no branch created | ~10s |
+| Create new repository | ✅ mcp-description-test created | ~9.9s |
+| Fix README + raise PR | ✅ Branch created, PR #9 raised | ~17s |
+| List open PRs | ✅ PR #8 and #9 returned | ~8s |
+
+---
+
 ## Official References
 
 - [Enable incoming A2A on Foundry agent — Microsoft Learn](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/enable-agent-to-agent-endpoint)
@@ -280,4 +475,4 @@ These are **not called by SKILL.md** — they are guidance text so the orchestra
 ---
 
 *NathCorp Internal — Phase 3 | Rajesh (rajesh.alda@nathcorp.com)*
-*Version: 2.1 | Updated: 2026-06-09*
+*Version: 3.0 | Updated: 2026-06-11*

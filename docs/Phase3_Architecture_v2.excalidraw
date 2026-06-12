@@ -1,0 +1,290 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+
+    {
+      "type": "text", "version": 1, "id": "title",
+      "x": 180, "y": -40, "width": 640, "height": 30,
+      "text": "NathCorp GitHub Agent — Zero Plugin-Update Architecture",
+      "fontSize": 20, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": null, "originalText": "NathCorp GitHub Agent — Zero Plugin-Update Architecture",
+      "autoResize": true, "strokeColor": "#000000", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "ellipse", "version": 1, "id": "box-user",
+      "x": 350, "y": 20, "width": 220, "height": 60,
+      "backgroundColor": "#e7f5ff", "strokeColor": "#1971c2", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-user"}, {"type": "arrow", "id": "arr0"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-user",
+      "x": 370, "y": 40, "width": 180, "height": 20,
+      "text": "User — natural language request",
+      "fontSize": 13, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-user", "originalText": "User — natural language request",
+      "autoResize": true, "strokeColor": "#1971c2", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-cowork",
+      "x": 350, "y": 140, "width": 220, "height": 70,
+      "backgroundColor": "#d0ebff", "strokeColor": "#1971c2", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-cowork"}, {"type": "arrow", "id": "arr0"}, {"type": "arrow", "id": "arr1"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-cowork",
+      "x": 360, "y": 155, "width": 200, "height": 40,
+      "text": "Microsoft Cowork\n(M365 Frontier)",
+      "fontSize": 14, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-cowork", "originalText": "Microsoft Cowork\n(M365 Frontier)",
+      "autoResize": true, "strokeColor": "#1971c2", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "arrow", "version": 1, "id": "arr0",
+      "x": 460, "y": 80, "width": 0, "height": 60,
+      "points": [[0, 0], [0, 60]],
+      "startBinding": {"elementId": "box-user", "focus": 0, "gap": 1},
+      "endBinding": {"elementId": "box-cowork", "focus": 0, "gap": 1},
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#1971c2", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0, "fillStyle": "solid",
+      "boundElements": []
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-manifest",
+      "x": 350, "y": 290, "width": 220, "height": 80,
+      "backgroundColor": "#fff3bf", "strokeColor": "#e67700", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-manifest"}, {"type": "arrow", "id": "arr1"}, {"type": "arrow", "id": "arr2"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-manifest",
+      "x": 360, "y": 300, "width": 200, "height": 60,
+      "text": "Plugin Manifest\n(deployed ONCE,\nnever updated)",
+      "fontSize": 13, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-manifest", "originalText": "Plugin Manifest\n(deployed ONCE,\nnever updated)",
+      "autoResize": true, "strokeColor": "#e67700", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "arrow", "version": 1, "id": "arr1",
+      "x": 460, "y": 210, "width": 0, "height": 80,
+      "points": [[0, 0], [0, 80]],
+      "startBinding": {"elementId": "box-cowork", "focus": 0, "gap": 1},
+      "endBinding": {"elementId": "box-manifest", "focus": 0, "gap": 1},
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#e67700", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0, "fillStyle": "solid",
+      "boundElements": [{"type": "text", "id": "lbl-arr1"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-arr1",
+      "x": 470, "y": 240, "width": 220, "height": 16,
+      "text": "reads manifest.json once → finds mcpServerUrl",
+      "fontSize": 11, "fontFamily": 2, "textAlign": "left", "verticalAlign": "middle",
+      "containerId": "arr1", "originalText": "reads manifest.json once → finds mcpServerUrl",
+      "autoResize": true, "strokeColor": "#555555", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-bridge",
+      "x": 350, "y": 450, "width": 220, "height": 90,
+      "backgroundColor": "#d3f9d8", "strokeColor": "#2f9e44", "strokeWidth": 3,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-bridge"}, {"type": "arrow", "id": "arr2"}, {"type": "arrow", "id": "arr3"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-bridge",
+      "x": 360, "y": 460, "width": 200, "height": 70,
+      "text": "nathcorp-mcp-server\n(Azure App Service)\n★ THE BRAIN ★\ndelegate_to_github_agent",
+      "fontSize": 13, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-bridge", "originalText": "nathcorp-mcp-server\n(Azure App Service)\n★ THE BRAIN ★\ndelegate_to_github_agent",
+      "autoResize": true, "strokeColor": "#2f9e44", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "arrow", "version": 1, "id": "arr2",
+      "x": 460, "y": 370, "width": 0, "height": 80,
+      "points": [[0, 0], [0, 80]],
+      "startBinding": {"elementId": "box-manifest", "focus": 0, "gap": 1},
+      "endBinding": {"elementId": "box-bridge", "focus": 0, "gap": 1},
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#2f9e44", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0, "fillStyle": "solid",
+      "boundElements": [{"type": "text", "id": "lbl-arr2"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-arr2",
+      "x": 470, "y": 400, "width": 260, "height": 16,
+      "text": "mcp_list_tools — fetches LIVE description every conversation",
+      "fontSize": 11, "fontFamily": 2, "textAlign": "left", "verticalAlign": "middle",
+      "containerId": "arr2", "originalText": "mcp_list_tools — fetches LIVE description every conversation",
+      "autoResize": true, "strokeColor": "#555555", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-foundry",
+      "x": 350, "y": 620, "width": 220, "height": 80,
+      "backgroundColor": "#f3e8ff", "strokeColor": "#7048e8", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-foundry"}, {"type": "arrow", "id": "arr3"}, {"type": "arrow", "id": "arr4"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-foundry",
+      "x": 360, "y": 630, "width": 200, "height": 60,
+      "text": "Azure AI Foundry\ngithub-agent (gpt-5.4)\nLLM picks tools autonomously",
+      "fontSize": 13, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-foundry", "originalText": "Azure AI Foundry\ngithub-agent (gpt-5.4)\nLLM picks tools autonomously",
+      "autoResize": true, "strokeColor": "#7048e8", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "arrow", "version": 1, "id": "arr3",
+      "x": 460, "y": 540, "width": 0, "height": 80,
+      "points": [[0, 0], [0, 80]],
+      "startBinding": {"elementId": "box-bridge", "focus": 0, "gap": 1},
+      "endBinding": {"elementId": "box-foundry", "focus": 0, "gap": 1},
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#7048e8", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0, "fillStyle": "solid",
+      "boundElements": [{"type": "text", "id": "lbl-arr3"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-arr3",
+      "x": 470, "y": 570, "width": 280, "height": 16,
+      "text": "A2A v1.0 SendMessage — natural language, Managed Identity",
+      "fontSize": 11, "fontFamily": 2, "textAlign": "left", "verticalAlign": "middle",
+      "containerId": "arr3", "originalText": "A2A v1.0 SendMessage — natural language, Managed Identity",
+      "autoResize": true, "strokeColor": "#555555", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-ghmcp",
+      "x": 350, "y": 780, "width": 220, "height": 70,
+      "backgroundColor": "#ffe8cc", "strokeColor": "#d9480f", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-ghmcp"}, {"type": "arrow", "id": "arr4"}, {"type": "arrow", "id": "arr5"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-ghmcp",
+      "x": 360, "y": 790, "width": 200, "height": 50,
+      "text": "Official GitHub MCP Server\n(114 tools, GitHub PAT)",
+      "fontSize": 13, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-ghmcp", "originalText": "Official GitHub MCP Server\n(114 tools, GitHub PAT)",
+      "autoResize": true, "strokeColor": "#d9480f", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "arrow", "version": 1, "id": "arr4",
+      "x": 460, "y": 700, "width": 0, "height": 80,
+      "points": [[0, 0], [0, 80]],
+      "startBinding": {"elementId": "box-foundry", "focus": 0, "gap": 1},
+      "endBinding": {"elementId": "box-ghmcp", "focus": 0, "gap": 1},
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#d9480f", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0, "fillStyle": "solid",
+      "boundElements": [{"type": "text", "id": "lbl-arr4"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-arr4",
+      "x": 470, "y": 730, "width": 280, "height": 16,
+      "text": "MCP tool call (auto-approved) e.g. create_repository",
+      "fontSize": 11, "fontFamily": 2, "textAlign": "left", "verticalAlign": "middle",
+      "containerId": "arr4", "originalText": "MCP tool call (auto-approved) e.g. create_repository",
+      "autoResize": true, "strokeColor": "#555555", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-github",
+      "x": 350, "y": 930, "width": 220, "height": 70,
+      "backgroundColor": "#ffe3e3", "strokeColor": "#c92a2a", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-github"}, {"type": "arrow", "id": "arr5"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-github",
+      "x": 360, "y": 945, "width": 200, "height": 40,
+      "text": "GitHub\n(rajeshaldanathcorp repos)",
+      "fontSize": 14, "fontFamily": 2, "textAlign": "center", "verticalAlign": "middle",
+      "containerId": "box-github", "originalText": "GitHub\n(rajeshaldanathcorp repos)",
+      "autoResize": true, "strokeColor": "#c92a2a", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "arrow", "version": 1, "id": "arr5",
+      "x": 460, "y": 850, "width": 0, "height": 80,
+      "points": [[0, 0], [0, 80]],
+      "startBinding": {"elementId": "box-ghmcp", "focus": 0, "gap": 1},
+      "endBinding": {"elementId": "box-github", "focus": 0, "gap": 1},
+      "startArrowhead": null, "endArrowhead": "arrow",
+      "strokeColor": "#c92a2a", "strokeWidth": 2, "strokeStyle": "solid",
+      "roughness": 0, "opacity": 100, "angle": 0, "fillStyle": "solid",
+      "boundElements": [{"type": "text", "id": "lbl-arr5"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-arr5",
+      "x": 470, "y": 880, "width": 180, "height": 16,
+      "text": "GitHub REST API (HTTPS)",
+      "fontSize": 11, "fontFamily": 2, "textAlign": "left", "verticalAlign": "middle",
+      "containerId": "arr5", "originalText": "GitHub REST API (HTTPS)",
+      "autoResize": true, "strokeColor": "#555555", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "text", "version": 1, "id": "note-manifest",
+      "x": 30, "y": 295, "width": 280, "height": 60,
+      "text": "Plugin's only job: point Cowork to\nthe MCP server URL.\nSKILL.md in plugin = ignored at runtime.",
+      "fontSize": 12, "fontFamily": 2, "textAlign": "left", "verticalAlign": "top",
+      "containerId": null, "originalText": "Plugin's only job: point Cowork to\nthe MCP server URL.\nSKILL.md in plugin = ignored at runtime.",
+      "autoResize": true, "strokeColor": "#e67700", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "text", "version": 1, "id": "note-bridge",
+      "x": 30, "y": 450, "width": 300, "height": 90,
+      "text": "Tool description = the new SKILL.md:\n• 7 intent categories (read-only, direct\n  commit, repo mgmt, branch+PR, etc.)\n• Update server.js → instant rollout\n• Zero plugin re-upload, zero admin approval",
+      "fontSize": 12, "fontFamily": 2, "textAlign": "left", "verticalAlign": "top",
+      "containerId": null, "originalText": "Tool description = the new SKILL.md:\n• 7 intent categories (read-only, direct\n  commit, repo mgmt, branch+PR, etc.)\n• Update server.js → instant rollout\n• Zero plugin re-upload, zero admin approval",
+      "autoResize": true, "strokeColor": "#2f9e44", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "text", "version": 1, "id": "note-foundry",
+      "x": 30, "y": 625, "width": 290, "height": 70,
+      "text": "Receives plain natural language only.\nStructured tool instructions cause 500s.\nAgent Card = A2A discovery metadata\n(skills, tags, example prompts).",
+      "fontSize": 12, "fontFamily": 2, "textAlign": "left", "verticalAlign": "top",
+      "containerId": null, "originalText": "Receives plain natural language only.\nStructured tool instructions cause 500s.\nAgent Card = A2A discovery metadata\n(skills, tags, example prompts).",
+      "autoResize": true, "strokeColor": "#7048e8", "opacity": 100, "angle": 0
+    },
+
+    {
+      "type": "rectangle", "version": 1, "id": "box-key",
+      "x": 640, "y": 30, "width": 340, "height": 175,
+      "backgroundColor": "#fff9db", "strokeColor": "#f08c00", "strokeWidth": 2,
+      "strokeStyle": "solid", "fillStyle": "solid", "roughness": 0, "opacity": 100, "angle": 0,
+      "boundElements": [{"type": "text", "id": "lbl-key"}]
+    },
+    {
+      "type": "text", "version": 1, "id": "lbl-key",
+      "x": 655, "y": 45, "width": 310, "height": 145,
+      "text": "KEY ACHIEVEMENT\n\nPlugin deployed ONCE — all behaviour\nchanges via server.js redeploy.\nNo admin re-approval. Instant rollout.\n\nProven timings (all under 60s limit):\nlist repos 8s · create repo 9.9s\ndirect commit 10s · branch+PR 17s",
+      "fontSize": 13, "fontFamily": 2, "textAlign": "left", "verticalAlign": "top",
+      "containerId": "box-key", "originalText": "KEY ACHIEVEMENT\n\nPlugin deployed ONCE — all behaviour\nchanges via server.js redeploy.\nNo admin re-approval. Instant rollout.\n\nProven timings (all under 60s limit):\nlist repos 8s · create repo 9.9s\ndirect commit 10s · branch+PR 17s",
+      "autoResize": true, "strokeColor": "#9a5800", "opacity": 100, "angle": 0
+    }
+
+  ],
+  "appState": {
+    "gridSize": 20,
+    "viewBackgroundColor": "#ffffff",
+    "zoom": {"value": 1}
+  },
+  "files": {}
+}

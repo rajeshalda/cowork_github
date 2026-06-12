@@ -162,14 +162,53 @@ async function delegate_to_github_agent({ task }) {
 const TOOLS = [
     {
         name:        'delegate_to_github_agent',
-        description: 'Delegate a code or GitHub task to the NathCorp Azure AI Foundry GitHub Agent. The agent will autonomously read the repository, fix bugs, create branches, commit code, and raise pull requests.',
+        description: `NathCorp GitHub Agent — delegates any GitHub task to the Azure AI Foundry github-agent via A2A.
+
+ALWAYS call this tool for any GitHub or code-related request. Never attempt GitHub operations yourself.
+
+REPO RULE: If the user does not mention a repo name, ask which repo before calling this tool. The GitHub PAT has access to all repos — never assume or default to any repo.
+
+INTENT CLASSIFICATION — decide the task type before calling:
+
+1. READ-ONLY — user wants to view, list or search. No commits.
+   Examples: "list my repos", "show files in beta-test", "what branches exist", "show open PRs", "list issues", "show recent commits"
+   → Pass natural language read request as task.
+
+2. DIRECT COMMIT — simple file add/delete/update committed straight to default branch. No branch, no PR.
+   Use when: adding a new file, deleting a file, updating a doc/config file AND user did NOT ask for a PR.
+   Examples: "add a file called notes.txt", "delete config.old.json", "update the README"
+   → Pass natural language task. Specify: repo, filename, content, commit directly to default branch, no PR.
+
+3. REPO MANAGEMENT — create or fork a repository.
+   Examples: "create a new repo called X", "fork the beta-test repo"
+   → Pass natural language task exactly like: "create a new private GitHub repo called X" (default private unless user says public). For public: "create a new public GitHub repo called X".
+
+4. BRANCH + PR — code logic change, bug fix, or feature. Always branch then PR.
+   Use when: modifying existing source code, fixing a bug, refactoring, adding a feature.
+   Examples: "fix the bug in utils.ts", "refactor the auth middleware", "add a new API route"
+   → Pass natural language task. Specify: repo, what to fix, create a branch, commit, raise a PR.
+
+5. PR / ISSUE OPERATION — act on existing PR or issue.
+   Examples: "merge PR #8", "close PR #3", "create an issue", "list open PRs", "add a comment to issue #5"
+   → Pass natural language task with PR or issue number.
+
+6. WORKFLOW / ACTIONS — GitHub Actions operations.
+   Examples: "run the deploy workflow", "show CI logs", "list workflows"
+   → Pass natural language task.
+
+7. EXPLICIT USER OVERRIDE — always wins over all categories above.
+   "no PR" or "commit directly" → direct commit even for code changes.
+   "raise a PR" → branch + PR even for simple file additions.
+   User names a branch → use that exact branch name.
+
+TASK FORMAT: Always write a clear natural language instruction. Include repo name and what to do. Do NOT include JSON, tool names, or structured parameters — the Foundry agent decides which tools to use.`,
         annotations: { readOnlyHint: false, title: 'Delegate to GitHub Agent' },
         inputSchema: {
             type:       'object',
             properties: {
                 task: {
                     type:        'string',
-                    description: 'Full task description. Always include: full repo path as rajeshaldanathcorp/<repo>, file path, bug description, branch name to create, default branch is master. Example: "In GitHub repo rajeshaldanathcorp/beta-test, fix the bug in src/lib/utils.ts line 81 — formatUserName returns lastName+firstName without a space. Default branch is master. Create branch fix/format-user-name-space from master, fix to return lastName + \' \' + firstName, commit, and raise a PR against master."'
+                    description: 'Natural language instruction for the GitHub agent. Write exactly what you want done — the agent decides which tools to use. Example: "create a new repo called my-project", "add a file called notes.txt in beta-test repo", "fix the bug in src/utils.ts in beta-test and raise a PR", "list all repos", "merge PR #8 in beta-test".'
                 }
             },
             required: ['task']
